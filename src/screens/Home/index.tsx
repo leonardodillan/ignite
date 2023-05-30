@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, ScrollView, Alert, FlatList } from "react-native";
 
 import { Participant } from "../../components/Participant";
 
@@ -9,11 +9,24 @@ export default function Home() {
   const participants = ['Rodrigo', 'Vini', 'Diego', 'Biro', 'Jack Sparrow', 'Thomas Shelby', 'Vulgo Mec Dillan'];
 
   function handleParticipantAdd() {
+    if(participants.includes("Rodrigo")){
+      return Alert.alert("Participante existe", "Já existe um participante na lista com esse nome")
+    }
     console.log("Você clicou no botão de adicionar")
   }
 
   function handleParticipantRemove(name: string) {
-    console.log(`Você removeu o participante ${name}`)
+    Alert.alert("Remover", `Remover o participante ${name}?`, [
+      {
+        text: "Sim",
+        onPress: () => Alert.alert("Deletado!")
+      },
+      {
+        text: "Não",
+        style: 'cancel'
+      }
+    ])
+    console.log(`Você clicou no botão de remover o participante ${name}`)
   }
 
   return (
@@ -39,17 +52,24 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {
-          participants.map(participant => (
-            <Participant
-              key={participant}
-              name={participant}
-              onRemove={() => handleParticipantRemove(participant)}
-            />
-          ))
-        }
-      </ScrollView>
+      <FlatList
+        data={participants}
+        keyExtractor={item => item}
+        renderItem={({ item }) => (
+          <Participant
+            key={item}
+            name={item}
+            onRemove={() => handleParticipantRemove(item)}
+          />
+        )}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <Text style={styles.listEmptyText}>
+            Ninguém chegou no evento ainda? Adicione participantes a sua lista de presença
+
+          </Text>
+        )}
+      />
 
      
     </View>
